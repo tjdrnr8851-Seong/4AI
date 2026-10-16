@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "QUICK 4AI — 다중 AI 교차 검증",
+  "version": "1.0.0",
+  "description": "GPT, Gemini, Perplexity, Claude 4대 AI가 질문을 독립 분석, 팩트체크, 상호 비판, 최종 종합하는 초경량 Chrome Side Panel 확장 프로그램",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "QUICK 4AI 패널 열기"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "permissions": [
+    "sidePanel",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://localhost:*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  }
+}

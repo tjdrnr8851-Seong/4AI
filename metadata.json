@@ -1,0 +1,8 @@
+{
+  "name": "QUICK 4AI — 다중 AI 교차 검증 시스템",
+  "description": "GPT, Gemini, Perplexity, Claude 4대 AI가 독립 분석, 팩트체크 근거 조사, 상호 비판 및 최종 종합을 수행하는 경량 Chrome Side Panel 확장 프로그램 및 검증 백엔드",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

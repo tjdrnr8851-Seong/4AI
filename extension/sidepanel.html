@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QUICK 4AI Side Panel</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-icon">4AI</div>
+      <div class="brand-title">QUICK 4AI</div>
+    </div>
+    <div id="statusBadge" class="badge badge-demo">데모 · AI 호출 없음</div>
+  </header>
+
+  <!-- Input View -->
+  <section id="inputSection">
+    <div class="mode-selector">
+      <button type="button" id="btnModeQuick" class="mode-btn active">⚡ QUICK (기본 6회)</button>
+      <button type="button" id="btnModeDeep" class="mode-btn">🔬 DEEP (심층 12회)</button>
+    </div>
+
+    <div class="form-group">
+      <div class="label-row">
+        <span>질문 유형</span>
+      </div>
+      <select id="questionType">
+        <option value="general">일반 질문</option>
+        <option value="fact_check">사실 조사 / 팩트체크</option>
+        <option value="decision">비교 / 의사결정</option>
+        <option value="code_review">코드 검토 / 스펙</option>
+        <option value="writing">글쓰기 / 정합성</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <div class="label-row">
+        <span>질문 입력</span>
+        <span id="queryCount">0 / 8,000자</span>
+      </div>
+      <textarea id="queryInput" rows="4" placeholder="교차 검증할 질문을 입력하세요..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <div class="label-row">
+        <span>참고자료 (직접 붙여넣기, 선택)</span>
+        <span id="refCount">0 / 20,000자</span>
+      </div>
+      <textarea id="refInput" rows="2" placeholder="검토에 반영할 텍스트 자료를 붙여넣으세요..."></textarea>
+    </div>
+
+    <button type="button" id="btnStart" class="btn-primary">원터치 4AI 검증 시작</button>
+  </section>
+
+  <!-- Progress View -->
+  <section id="progressSection" style="display: none;">
+    <div class="progress-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span style="font-weight: 600; font-size: 12px;" id="currentStageTitle">검증 파이프라인 가동 중</span>
+        <span style="color: var(--text-muted); font-size: 11px;" id="timerDisplay">00:00</span>
+      </div>
+
+      <div class="stage-step" id="stepA">
+        <div class="stage-dot"></div>
+        <div style="flex: 1;">
+          <div style="font-weight: 600;">Stage A: GPT + Gemini 독립 분석</div>
+          <div style="font-size: 10.5px; color: var(--text-muted);">서로의 답변을 보지 않고 병렬 분석 (2회)</div>
+        </div>
+      </div>
+
+      <div class="stage-step" id="stepB">
+        <div class="stage-dot"></div>
+        <div style="flex: 1;">
+          <div style="font-weight: 600;">Stage B: Perplexity 팩트체크</div>
+          <div style="font-size: 10.5px; color: var(--text-muted);">핵심 주장 1차 웹 출처 대조 (1회)</div>
+        </div>
+      </div>
+
+      <div class="stage-step" id="stepC">
+        <div class="stage-dot"></div>
+        <div style="flex: 1;">
+          <div style="font-weight: 600;">Stage C: 상호 비판 및 자가 수정</div>
+          <div style="font-size: 10.5px; color: var(--text-muted);">GPT ↔ Gemini 교차 검토 및 보정 (2회)</div>
+        </div>
+      </div>
+
+      <div class="stage-step" id="stepD">
+        <div class="stage-dot"></div>
+        <div style="flex: 1;">
+          <div style="font-weight: 600;">Stage D: Claude 최종 종합</div>
+          <div style="font-size: 10.5px; color: var(--text-muted);">다수결 배제, 근거 중심 종합 및 쟁점 보존 (1회)</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 11px; color: var(--text-muted);" id="callCountLabel">호출 수: 0 / 6회</span>
+        <button type="button" id="btnCancel" class="btn-secondary" style="max-width: 80px; padding: 4px 8px;">중단</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Result View -->
+  <section id="resultSection" style="display: none;">
+    <div class="result-card">
+      <div class="tab-nav">
+        <button type="button" class="tab-btn active" data-tab="final">최종 종합 답변</button>
+        <button type="button" class="tab-btn" data-tab="claims">주장별 근거</button>
+        <button type="button" class="tab-btn" data-tab="critiques">상호 비판 내역</button>
+        <button type="button" class="tab-btn" data-tab="unresolved">미해결 쟁점</button>
+        <button type="button" class="tab-btn" data-tab="sources">1차 출처</button>
+      </div>
+
+      <div id="tabContentFinal" class="result-content"></div>
+      <div id="tabContentClaims" class="result-content" style="display: none;"></div>
+      <div id="tabContentCritiques" class="result-content" style="display: none;"></div>
+      <div id="tabContentUnresolved" class="result-content" style="display: none;"></div>
+      <div id="tabContentSources" class="result-content" style="display: none;"></div>
+    </div>
+
+    <!-- Upgrade Offer to DEEP -->
+    <div id="deepOfferCard" class="result-card" style="display: none; border-color: rgba(139, 92, 246, 0.4); background: rgba(139, 92, 246, 0.08);">
+      <div style="font-weight: 700; color: #c4b5fd; margin-bottom: 4px;">🔬 DEEP 심층 검증 권장</div>
+      <div style="font-size: 11.5px; color: #ddd6fe; margin-bottom: 8px;">
+        미해결 쟁점 또는 모델 간 이견이 감지되었습니다. 4대 AI 전방위 상호 비판(All-to-All)으로 심층 검토할 수 있습니다.
+      </div>
+      <button type="button" id="btnUpgradeDeep" class="btn-primary" style="background: #7c3aed;">
+        기존 결과 유지하고 DEEP으로 전환 (+6회 추가)
+      </button>
+    </div>
+
+    <div class="footer-actions">
+      <button type="button" id="btnCopy" class="btn-secondary">📋 복사</button>
+      <button type="button" id="btnDownloadMd" class="btn-secondary">💾 마크다운 저장</button>
+      <button type="button" id="btnReset" class="btn-secondary">🔄 새 질문</button>
+    </div>
+  </section>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>
